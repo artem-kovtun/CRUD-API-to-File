@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using CRUDtoFIle.Models;
+using CRUDtoFIle.Repositories;
 
 namespace CRUDtoFIle.Controllers
 {
@@ -12,22 +10,23 @@ namespace CRUDtoFIle.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        UserRepository repo;
+        private readonly IUserRepository _userRepository;
 
-        public UsersController(UserRepository repo)
+        public UsersController(IUserRepository userRepository)
         {
-            this.repo = repo;
-            if (!repo.users.Any())
+            _userRepository = userRepository;
+
+            if (!_userRepository.Users.Any())
             {
-                repo.users.Add(new User { Email = "tom26@gmail.com", Name = "Tom", Age = 26 });
-                repo.users.Add(new User { Email = "alice31@gmail.com", Name = "Alice", Age = 31 });
+                _userRepository.Add(new User { Email = "tom26@gmail.com", Name = "Tom", Age = 26 });
+                _userRepository.Add(new User { Email = "alice31@gmail.com", Name = "Alice", Age = 31 });
             }
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> Get()
-        {            
-            return repo.users.ToList();
+        public ActionResult<IEnumerable<User>> Get()
+        {
+            return _userRepository.GetAll();
         }
 
     }
